@@ -45,6 +45,7 @@ import gleam/order.{type Order}
 /// ```
 ///
 @external(erlang, "gleam_stdlib", "parse_float")
+@external(native, "runtime", "gleam_native_float_parse")
 @external(javascript, "../gleam_stdlib.mjs", "parse_float")
 pub fn parse(string: String) -> Result(Float, Nil)
 
@@ -57,6 +58,7 @@ pub fn parse(string: String) -> Result(Float, Nil)
 /// ```
 ///
 @external(erlang, "gleam_stdlib", "float_to_string")
+@external(native, "runtime", "gleam_native_float_to_string")
 @external(javascript, "../gleam_stdlib.mjs", "float_to_string")
 pub fn to_string(x: Float) -> String
 
@@ -98,12 +100,21 @@ pub fn clamp(x: Float, min min_bound: Float, max max_bound: Float) -> Float {
 /// you may use [`loosely_compare`](#loosely_compare) instead.
 ///
 pub fn compare(a: Float, with b: Float) -> Order {
+  case do_compare(a, b) {
+    -1 -> order.Lt
+    0 -> order.Eq
+    _ -> order.Gt
+  }
+}
+
+@external(native, "runtime", "gleam_native_float_compare")
+fn do_compare(a: Float, b: Float) -> Int {
   case a == b {
-    True -> order.Eq
+    True -> 0
     False ->
       case a <. b {
-        True -> order.Lt
-        False -> order.Gt
+        True -> -1
+        False -> 1
       }
   }
 }
@@ -205,6 +216,7 @@ pub fn max(a: Float, b: Float) -> Float {
 /// ```
 ///
 @external(erlang, "math", "ceil")
+@external(native, "runtime", "gleam_native_float_ceiling")
 @external(javascript, "../gleam_stdlib.mjs", "ceiling")
 pub fn ceiling(x: Float) -> Float
 
@@ -217,6 +229,7 @@ pub fn ceiling(x: Float) -> Float
 /// ```
 ///
 @external(erlang, "math", "floor")
+@external(native, "runtime", "gleam_native_float_floor")
 @external(javascript, "../gleam_stdlib.mjs", "floor")
 pub fn floor(x: Float) -> Float
 
@@ -233,6 +246,7 @@ pub fn floor(x: Float) -> Float
 /// ```
 ///
 @external(erlang, "erlang", "round")
+@external(native, "runtime", "gleam_native_float_round")
 pub fn round(x: Float) -> Int {
   case x >=. 0.0 {
     True -> js_round(x)
@@ -252,6 +266,7 @@ fn js_round(a: Float) -> Int
 /// ```
 ///
 @external(erlang, "erlang", "trunc")
+@external(native, "runtime", "gleam_native_float_truncate")
 @external(javascript, "../gleam_stdlib.mjs", "truncate")
 pub fn truncate(x: Float) -> Int
 
@@ -284,6 +299,7 @@ pub fn to_precision(x: Float, precision: Int) -> Float {
 }
 
 @external(erlang, "erlang", "float")
+@external(native, "runtime", "gleam_native_int_to_float")
 @external(javascript, "../gleam_stdlib.mjs", "identity")
 fn do_to_float(a: Int) -> Float
 
@@ -346,6 +362,7 @@ pub fn power(base: Float, of exponent: Float) -> Result(Float, Nil) {
 }
 
 @external(erlang, "math", "pow")
+@external(native, "runtime", "gleam_native_float_power")
 @external(javascript, "../gleam_stdlib.mjs", "power")
 fn do_power(a: Float, b: Float) -> Float
 
@@ -429,6 +446,7 @@ fn product_loop(numbers: List(Float), initial: Float) -> Float {
 /// ```
 ///
 @external(erlang, "rand", "uniform")
+@external(native, "runtime", "gleam_native_float_random")
 @external(javascript, "../gleam_stdlib.mjs", "random_uniform")
 pub fn random() -> Float
 
@@ -596,6 +614,7 @@ pub fn logarithm(x: Float) -> Result(Float, Nil) {
 }
 
 @external(erlang, "math", "log")
+@external(native, "runtime", "gleam_native_float_log")
 @external(javascript, "../gleam_stdlib.mjs", "log")
 fn do_log(x: Float) -> Float
 
@@ -617,5 +636,6 @@ fn do_log(x: Float) -> Float
 /// ```
 ///
 @external(erlang, "math", "exp")
+@external(native, "runtime", "gleam_native_float_exponential")
 @external(javascript, "../gleam_stdlib.mjs", "exp")
 pub fn exponential(x: Float) -> Float
