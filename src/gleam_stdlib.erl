@@ -285,7 +285,7 @@ inspect(Atom) when is_atom(Atom) ->
 inspect(Any) when is_integer(Any) ->
     erlang:integer_to_list(Any);
 inspect(Any) when is_float(Any) ->
-    io_lib_format:fwrite_g(Any);
+    erlang:float_to_binary(Any, [short]);
 inspect(Binary) when is_binary(Binary) ->
     case inspect_maybe_utf8_string(Binary, <<>>) of
         {ok, InspectedUtf8String} -> InspectedUtf8String;
@@ -427,7 +427,7 @@ convert_to_u(Code) ->
     list_to_binary(io_lib:format("\\u{~4.16.0B}", [Code])).
 
 float_to_string(Float) when is_float(Float) ->
-    erlang:iolist_to_binary(io_lib_format:fwrite_g(Float)).
+    erlang:float_to_binary(Float, [short]).
 
 utf_codepoint_list_to_string(List) ->
     case unicode:characters_to_binary(List) of
